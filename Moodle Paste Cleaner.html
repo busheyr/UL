@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moodle Paste Cleaner</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+      max-width: 700px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .box {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      min-height: 150px;
+      background: #fdfdfd;
+      overflow-y: auto;
+    }
+    #input {
+      margin-bottom: 1rem;
+    }
+    button {
+      margin: 0.5rem 0;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>Moodle Paste Cleaner</h2>
+  <p><strong>Step 1:</strong> Paste your text from Word or Google Docs below.</p>
+  <div id="input" class="box" contenteditable="true"></div>
+
+  <button onclick="cleanHTML()">Convert Formatting</button>
+
+  <p><strong>Step 2:</strong> Copy this cleaned version and paste it into Moodle:</p>
+  <div id="output" class="box"></div>
+  <button onclick="copyOutput()">Copy Cleaned Text</button>
+
+  <script>
+    function cleanHTML() {
+      let inputHTML = document.getElementById("input").innerHTML;
+
+      // Convert superscript and subscript
+      inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*super;?[^>]*>(.*?)<\/span>/gi, "<sup>$1</sup>");
+      inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*sub;?[^>]*>(.*?)<\/span>/gi, "<sub>$1</sub>");
+
+      // Remove inline styles but preserve semantic tags
+      inputHTML = inputHTML.replace(/ style=\"[^\"]*\"/gi, "");
+      inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
+                           .replace(/<\/span>/gi, "")
+                           .replace(/<font[^>]*>/gi, "")
+                           .replace(/<\/font>/gi, "");
+
+      // Normalize italics and bold
+      inputHTML = inputHTML.replace(/<i>/gi, "<em>")
+                           .replace(/<\/i>/gi, "</em>")
+                           .replace(/<b>/gi, "<strong>")
+                           .replace(/<\/b>/gi, "</strong>");
+
+      document.getElementById("output").innerHTML = inputHTML;
+    }
+
+    function copyOutput() {
+      const range = document.createRange();
+      range.selectNode(document.getElementById("output"));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges();
+      alert("Cleaned text copied to clipboard!");
+    }
+  </script>
+</body>
+</html>
