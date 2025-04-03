@@ -40,40 +40,50 @@
   <p><strong>Step 2:</strong> Copy this cleaned version and paste it into Moodle:</p>
   <div id="output" class="box"></div>
   <button onclick="copyOutput()">Copy Cleaned Text</button>
+<div style="background: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 5px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); max-width: 260px; font-size: 0.9em;">
+  <strong>Note:</strong> For best results, click <strong>"Advanced"</strong> in Moodle before pasting.
+</div>
+<script>
+  function cleanHTML() {
+    let inputHTML = document.getElementById("input").innerHTML;
 
-  <script>
-    function cleanHTML() {
-      let inputHTML = document.getElementById("input").innerHTML;
+    // Convert superscript and subscript
+    inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*super;?[^>]*>(.*?)<\/span>/gi, "<sup>$1</sup>");
+    inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*sub;?[^>]*>(.*?)<\/span>/gi, "<sub>$1</sub>");
 
-      // Convert superscript and subscript
-      inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*super;?[^>]*>(.*?)<\/span>/gi, "<sup>$1</sup>");
-      inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*sub;?[^>]*>(.*?)<\/span>/gi, "<sub>$1</sub>");
+    // Convert Word-style footnote links like [1] into superscript
+    inputHTML = inputHTML.replace(/<a[^>]*>\[(\d+)\]<\/a>/gi, "<sup>$1</sup>");
 
-      // Remove inline styles but preserve semantic tags
-      inputHTML = inputHTML.replace(/ style=\"[^\"]*\"/gi, "");
-      inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
-                           .replace(/<\/span>/gi, "")
-                           .replace(/<font[^>]*>/gi, "")
-                           .replace(/<\/font>/gi, "");
+    // Convert styled spans to semantic tags
+    inputHTML = inputHTML.replace(/<span[^>]*font-style:\s*italic;?[^>]*>(.*?)<\/span>/gi, "<em>$1</em>");
+    inputHTML = inputHTML.replace(/<span[^>]*font-weight:\s*bold;?[^>]*>(.*?)<\/span>/gi, "<strong>$1</strong>");
 
-      // Normalize italics and bold
-      inputHTML = inputHTML.replace(/<i>/gi, "<em>")
-                           .replace(/<\/i>/gi, "</em>")
-                           .replace(/<b>/gi, "<strong>")
-                           .replace(/<\/b>/gi, "</strong>");
+    // Normalize existing <i>/<b> tags to <em>/<strong>
+    inputHTML = inputHTML.replace(/<i>/gi, "<em>")
+                         .replace(/<\/i>/gi, "</em>")
+                         .replace(/<b>/gi, "<strong>")
+                         .replace(/<\/b>/gi, "</strong>");
 
-      document.getElementById("output").innerHTML = inputHTML;
-    }
+    // Remove inline styles and leftover spans/fonts
+    inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
+    inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
+                         .replace(/<\/span>/gi, "")
+                         .replace(/<font[^>]*>/gi, "")
+                         .replace(/<\/font>/gi, "");
 
-    function copyOutput() {
-      const range = document.createRange();
-      range.selectNode(document.getElementById("output"));
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand("copy");
-      window.getSelection().removeAllRanges();
-      alert("Cleaned text copied to clipboard!");
-    }
-  </script>
+    document.getElementById("output").innerHTML = inputHTML;
+  }
+
+  function copyOutput() {
+    const range = document.createRange();
+    range.selectNode(document.getElementById("output"));
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+    alert("Cleaned text copied to clipboard!");
+  }
+</script>
+
 </body>
 </html>
