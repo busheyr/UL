@@ -47,6 +47,9 @@
   function cleanHTML() {
     let inputHTML = document.getElementById("input").innerHTML;
 
+    // STEP 1: Tag double-spaced paragraphs
+    inputHTML = inputHTML.replace(/<p([^>]*)style="[^"]*line-height:\s*2[^"]*"([^>]*)>/gi, '<p$1 data-doublespaced="true"$2>');
+
     // Convert superscript and subscript
     inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*super;?[^>]*>(.*?)<\/span>/gi, "<sup>$1</sup>");
     inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*sub;?[^>]*>(.*?)<\/span>/gi, "<sub>$1</sub>");
@@ -71,6 +74,10 @@
                          .replace(/<font[^>]*>/gi, "")
                          .replace(/<\/font>/gi, "");
 
+    // STEP 2: Restore double-spacing to tagged paragraphs
+    inputHTML = inputHTML.replace(/<p[^>]*data-doublespaced="true"[^>]*>/gi, '<p style="line-height: 2;">');
+    inputHTML = inputHTML.replace(/ data-doublespaced="true"/gi, "");
+
     document.getElementById("output").innerHTML = inputHTML;
   }
 
@@ -84,6 +91,7 @@
     alert("Cleaned text copied to clipboard!");
   }
 </script>
+
 
 
 
