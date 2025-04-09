@@ -64,11 +64,9 @@
                          .replace(/<b>/gi, "<strong>")
                          .replace(/<\/b>/gi, "</strong>");
 
-// Collapse excessive <br> to a max of 2 (preserves spacing but removes spam)
-inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>");
-
-// Convert </p><p> (Word paragraph breaks) to double <br> for spacing
 inputHTML = inputHTML.replace(/<\/p>\s*<p[^>]*>/gi, "<br><br>");
+inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");
+inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){3,}/gi, "<br><br>");
 
     // Remove inline styles and leftover spans/fonts
     inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
