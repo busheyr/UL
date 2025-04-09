@@ -47,39 +47,43 @@
   function cleanHTML() {
     let inputHTML = document.getElementById("input").innerHTML;
 
-    // Convert superscript and subscript
+    // Step 1: Convert superscript and subscript
     inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*super;?[^>]*>(.*?)<\/span>/gi, "<sup>$1</sup>");
     inputHTML = inputHTML.replace(/<span[^>]*vertical-align:\s*sub;?[^>]*>(.*?)<\/span>/gi, "<sub>$1</sub>");
 
-    // Convert Word-style footnote links like [1] into superscript
+    // Step 2: Convert Word-style footnote links like [1] into superscript
     inputHTML = inputHTML.replace(/<a[^>]*>\[(\d+)\]<\/a>/gi, "<sup>$1</sup>");
 
-    // Convert styled spans to semantic tags
+    // Step 3: Tag paragraphs that are double-spaced so we can preserve them
+    inputHTML = inputHTML.replace(/<p([^>]*)style="[^"]*line-height:\s*2[^"]*"([^>]*)>/gi, '<p$1 data-doublespaced="true"$2>');
+
+    // Step 4: Convert styled spans to semantic tags
     inputHTML = inputHTML.replace(/<span[^>]*font-style:\s*italic;?[^>]*>(.*?)<\/span>/gi, "<em>$1</em>");
     inputHTML = inputHTML.replace(/<span[^>]*font-weight:\s*bold;?[^>]*>(.*?)<\/span>/gi, "<strong>$1</strong>");
 
-    // Normalize existing <i>/<b> tags to <em>/<strong>
+    // Step 5: Normalize existing <i>/<b> tags to <em>/<strong>
     inputHTML = inputHTML.replace(/<i>/gi, "<em>")
                          .replace(/<\/i>/gi, "</em>")
                          .replace(/<b>/gi, "<strong>")
                          .replace(/<\/b>/gi, "</strong>");
 
-    // Fix excessive line breaks from Word or Google Docs
-inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>"); // Preserve paragraph breaks
-inputHTML = inputHTML.replace(/<\/p>\s*<p>/gi, "<br><br>");         // Treat </p><p> as paragraph space
-inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");                 // Remove stray <p> tags
+    // Step 6: Fix excessive line breaks from Word or Google Docs
+    inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>");  // Preserve paragraph breaks
+    inputHTML = inputHTML.replace(/<\/p>\s*<p>/gi, "<br><br>");          // Treat </p><p> as paragraph space
+    inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");                  // Remove remaining <p> tags
 
-
-    // Reapply line-height: 2 to paragraphs that had it before cleaning
-inputHTML = inputHTML.replace(/<p[^>]*line-height:\s*2[^>]*>/gi, '<p style="line-height: 2;">');
-    // Remove inline styles and leftover spans/fonts
+    // Step 7: Remove inline styles and leftover spans/fonts
     inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
     inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
                          .replace(/<\/span>/gi, "")
                          .replace(/<font[^>]*>/gi, "")
                          .replace(/<\/font>/gi, "");
 
+    // Step 8: Restore double-spacing to marked paragraphs
+    inputHTML = inputHTML.replace(/<p[^>]*data-doublespaced="true"[^>]*>/gi, '<p style="line-height: 2;">');
+    inputHTML = inputHTML.replace(/ data-doublespaced="true"/gi, "");
 
+    // Step 9: Output the cleaned HTML
     document.getElementById("output").innerHTML = inputHTML;
   }
 
@@ -93,6 +97,7 @@ inputHTML = inputHTML.replace(/<p[^>]*line-height:\s*2[^>]*>/gi, '<p style="line
     alert("Cleaned text copied to clipboard!");
   }
 </script>
+
 
 </body>
 </html>
