@@ -64,6 +64,12 @@
                          .replace(/<b>/gi, "<strong>")
                          .replace(/<\/b>/gi, "</strong>");
 
+    // Fix excessive line breaks from Word or Google Docs
+inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){2,}/gi, "<br>");
+inputHTML = inputHTML.replace(/<\/p>\s*<p>/gi, "<br>"); // Convert paragraph breaks to single <br>
+inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");     // Remove remaining <p> tags
+
+
     // Remove inline styles and leftover spans/fonts
     inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
     inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
