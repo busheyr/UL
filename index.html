@@ -70,11 +70,6 @@ inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>");
 // Convert </p><p> (Word paragraph breaks) to double <br> for spacing
 inputHTML = inputHTML.replace(/<\/p>\s*<p[^>]*>/gi, "<br><br>");
 
-// Remove all remaining <p> tags
-inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");
-
-
-
     // Remove inline styles and leftover spans/fonts
     inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
     inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
