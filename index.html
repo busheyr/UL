@@ -64,10 +64,6 @@
                          .replace(/<b>/gi, "<strong>")
                          .replace(/<\/b>/gi, "</strong>");
 
-inputHTML = inputHTML.replace(/<\/p>\s*<p[^>]*>/gi, "<br><br>");
-inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");
-inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){3,}/gi, "<br><br>");
-
     // Remove inline styles and leftover spans/fonts
     inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
     inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
