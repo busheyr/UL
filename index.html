@@ -47,34 +47,41 @@
   function cleanHTML() {
     let inputHTML = document.getElementById("input").innerHTML;
 
-    // Step 1: Tag double-spaced paragraphs before stripping <p> or style attributes
-inputHTML = inputHTML.replace(/<p([^>]*)style="[^"]*line-height:\s*2[^"]*"([^>]*)>/gi, '<p$1 data-doublespaced="true"$2>');
+    // Step 1: Tag double-spaced paragraphs before cleanup
+    inputHTML = inputHTML.replace(/<p([^>]*)style="[^"]*line-height:\s*2[^"]*"([^>]*)>/gi, '<p$1 data-doublespaced="true"$2>');
 
-   // Step 2: Convert styled spans to semantic tags
-inputHTML = inputHTML.replace(/<span[^>]*font-style:\s*italic;?[^>]*>(.*?)<\/span>/gi, "<em>$1</em>");
-inputHTML = inputHTML.replace(/<span[^>]*font-weight:\s*bold;?[^>]*>(.*?)<\/span>/gi, "<strong>$1</strong>");
+    // Step 2: Convert styled spans to semantic tags
+    inputHTML = inputHTML.replace(/<span[^>]*font-style:\s*italic;?[^>]*>(.*?)<\/span>/gi, "<em>$1</em>");
+    inputHTML = inputHTML.replace(/<span[^>]*font-weight:\s*bold;?[^>]*>(.*?)<\/span>/gi, "<strong>$1</strong>");
 
-// Step 3: Normalize <i>/<b> to <em>/<strong>
-inputHTML = inputHTML.replace(/<i>/gi, "<em>")
-                     .replace(/<\/i>/gi, "</em>")
-                     .replace(/<b>/gi, "<strong>")
-                     .replace(/<\/b>/gi, "</strong>");
+    // Step 3: Normalize <i>/<b> to <em>/<strong>
+    inputHTML = inputHTML.replace(/<i>/gi, "<em>")
+                         .replace(/<\/i>/gi, "</em>")
+                         .replace(/<b>/gi, "<strong>")
+                         .replace(/<\/b>/gi, "</strong>");
 
-// Step 4: Clean up line breaks
-inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>");
-inputHTML = inputHTML.replace(/<\/p>\s*<p>/gi, "<br><br>");
-inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, ""); // This deletes <p> tags, so it must be AFTER tagging
+    // Step 4: Replace </p><p> with <br><br> to preserve paragraph spacing
+    inputHTML = inputHTML.replace(/<\/p>\s*<p[^>]*>/gi, "<br><br>");
 
-// Step 5: Remove leftover styles/spans/fonts
-inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
-inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
-                     .replace(/<\/span>/gi, "")
-                     .replace(/<font[^>]*>/gi, "")
-                     .replace(/<\/font>/gi, "");
+    // Step 5: Reduce 3+ <br> tags to exactly 2
+    inputHTML = inputHTML.replace(/(<br\s*\/?>\s*){3,}/gi, "<br><br>");
 
-// Step 6: Restore double-spacing
-inputHTML = inputHTML.replace(/<p[^>]*data-doublespaced="true"[^>]*>/gi, '<p style="line-height: 2;">');
-inputHTML = inputHTML.replace(/ data-doublespaced="true"/gi, "");
+    // Step 6: Remove all <p> tags (we're using <br> spacing instead)
+    inputHTML = inputHTML.replace(/<\/?p[^>]*>/gi, "");
+
+    // Step 7: Remove leftover styles and span/font wrappers
+    inputHTML = inputHTML.replace(/ style="[^"]*"/gi, "");
+    inputHTML = inputHTML.replace(/<span[^>]*>/gi, "")
+                         .replace(/<\/span>/gi, "")
+                         .replace(/<font[^>]*>/gi, "")
+                         .replace(/<\/font>/gi, "");
+
+    // Step 8: Wrap double-spaced content in <div style="line-height: 2;">
+    inputHTML = inputHTML.replace(/<p[^>]*data-doublespaced="true"[^>]*>(.*?)<\/p>/gi, '<div style="line-height: 2;">$1</div>');
+    inputHTML = inputHTML.replace(/ data-doublespaced="true"/gi, "");
+
+    document.getElementById("output").innerHTML = inputHTML;
+  }
 
   function copyOutput() {
     const range = document.createRange();
@@ -86,6 +93,7 @@ inputHTML = inputHTML.replace(/ data-doublespaced="true"/gi, "");
     alert("Cleaned text copied to clipboard!");
   }
 </script>
+
 
 
 </body>
